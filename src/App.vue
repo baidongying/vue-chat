@@ -1,0 +1,111 @@
+<template>
+  <div id="app">
+    <div class="sidebar">
+      <card
+        :user="user"
+        :search.sync="search"
+        @update-search="handleSearchChange">
+      </card>
+      <list
+        :user-list="userList"
+        :session="session"
+        :session-index.sync="sessionIndex"
+        :search="search"
+        @update-sessionIndex="handleSessionIndex">
+      </list>
+    </div>
+    <div class="main">
+      <message :session="session" :user="user" :user-list="userList"></message>
+      <sendText
+        :session="session">
+      </sendText>
+    </div>
+  </div>
+</template>
+
+<script>
+import store from 'src/store/store.js';
+import card from 'src/views/card.vue';
+import list from 'src/views/list.vue';
+import sendText from 'src/views/sendText.vue';
+import message from 'src/views/message.vue';
+export default {
+  name: 'app',
+  data () {
+    let serverData = store.fetch();
+
+    return {
+      // 登录用户
+      user: serverData.user,
+      // 用户列表
+      userList: serverData.userList,
+      // 会话列表
+      sessionList: serverData.sessionList,
+      // 搜索key
+      search: '',
+      // 选中的会话Index
+      sessionIndex: 0
+    };
+  },
+  computed: {
+    session() {
+      return this.sessionList[this.sessionIndex];
+    }
+  },
+  watch: {
+    // 每当sessionList改变时，保存到localStorage中
+    sessionList: {
+      deep: true,
+      handler() {
+        store.save({
+          user: this.user,
+          userList: this.userList,
+          sessionList: this.sessionList
+        });
+      }
+    }
+  },
+  components: {
+    card, list, sendText, message
+  },
+  methods: {
+    handleSessionIndex(value) {
+      this.sessionIndex = value;
+    },
+    handleSearchChange(value) {
+      this.search = value;
+    }
+  }
+}
+</script>
+
+<style lang="less">
+#app {
+  overflow: hidden;
+  border-radius: 3px;
+  .sidebar, .main {
+  height: 100%;
+  }
+  .sidebar {
+    float: left;
+    width: 200px;
+    color: #f4f4f4;
+    background-color: #2e3238;
+  }
+  .main {
+    position: relative;
+    overflow: hidden;
+    background-color: #eee;
+  }
+  .m-text {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+  }
+  .m-message {
+    height: ~'calc(100% - 160px)';
+  }
+}
+
+</style>
