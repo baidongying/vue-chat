@@ -40,7 +40,7 @@ if (!localStorage.getItem(key)) {
             date: now
         },
         {
-            text: '项目地址: https://sc.chinaz.com/jiaoben/',
+            text: '项目地址: https://github.com/baidongying/vue-chat.git',
             date: now
         }
       ]
